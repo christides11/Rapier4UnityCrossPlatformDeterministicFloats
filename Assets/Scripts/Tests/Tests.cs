@@ -1,4 +1,27 @@
 using System.Collections.Generic;
+using Unity.Burst;
+
+[BurstCompile(FloatPrecision.Standard, FloatMode.Deterministic)]
+public static class MyMathHelper
+{
+    [BurstCompile(FloatPrecision.Standard, FloatMode.Deterministic)]
+    public static float MultiplyFloat(float a, float b)
+    {
+        return a * b;
+    }
+    
+    [BurstCompile(FloatPrecision.Standard, FloatMode.Deterministic)]
+    public static float AddFloat(float a, float b)
+    {
+        return a + b;
+    }
+    
+    [BurstCompile(FloatPrecision.Standard, FloatMode.Deterministic)]
+    public static float MultiOperator(float fa, float fb, float fc, float fd)
+    {
+        return fa * fb + fa * fb - fd + fb / fc * fd - fa * fd + fc / fd + fc * fd + fc * fd - fb / fa;
+    }
+}
 
 public abstract class OperatorTest : ITest
 {
@@ -150,9 +173,32 @@ public class MultiOperator : ITest
         float fc = inputs[c].Float;
         float fd = inputs[d].Float;
 
+        
         float result = fa * fb + fa * fb - fd + fb / fc * fd - fa * fd + fc / fd
             + fc * fd + fc * fd - fb / fa;
+        
+        results[0] = FloatTools.FloatToBits(result);
 
+        return 1;
+    }
+}
+
+public class MultiOperatorBurst : ITest
+{
+    public int Execute(IReadOnlyList<FloatInputs.Input> inputs, int[] indices, ref uint[] results)
+    {
+        int a = indices[0];
+        int b = (a + 1) % inputs.Count;
+        int c = (a + 1) % inputs.Count;
+        int d = (a + 1) % inputs.Count;
+
+        float fa = inputs[a].Float;
+        float fb = inputs[b].Float;
+        float fc = inputs[c].Float;
+        float fd = inputs[d].Float;
+        
+        float result = MyMathHelper.MultiOperator(fa, fb, fc, fd);
+        
         results[0] = FloatTools.FloatToBits(result);
 
         return 1;

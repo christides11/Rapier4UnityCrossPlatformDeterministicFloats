@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 public class TestRunner
 {
@@ -9,31 +10,22 @@ public class TestRunner
     {
         new Cast(),
         new MultiOperator(),
+        new MultiOperatorBurst(),
 
         new Sin(),
         new Cos(),
         new Tan(),
         new Asin(),
         new Acos(),
-        new Atan(),
-
-        new MathematicsSin(),
-        new MathematicsCos(),
-        new MathematicsTan(),
-        new MathematicsAsin(),
-        new MathematicsAcos(),
-        new MathematicsAtan(),
-        new MathematicsFloor(),
-        new MathematicsCeil(),
-        new MathematicsRound(),
+        new Atan()
     };
 
     private static readonly ITest[] doubleOperandTests = new ITest[]
     {
-        new Add(), 
-        new Subtract(), 
-        new Multiply(), 
-        new Divide(), 
+        new Add(),
+        new Subtract(),
+        new Multiply(),
+        new Divide(),
         new MultiplyAdd(),
         new Equals(),
         new GreaterThan(), 
@@ -192,7 +184,8 @@ public class TestRunner
                 }
             }
         }
-
+        
+        Debug.Log(log.ToString());
         return log.ToString();
     }
 }

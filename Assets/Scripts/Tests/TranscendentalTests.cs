@@ -15,35 +15,34 @@ public abstract class SingleOperatorTest : ITest
     }
 }
 
-// Unity's Mathf just casts things to and from double, so not really the best test.
 public class Sin : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Sin(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Sin(f));
 }
 
 public class Cos : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Cos(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Cos(f));
 }
 
 public class Tan : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Tan(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Tan(f));
 }
 
 public class Asin : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Asin(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Asin(f));
 }
 
 public class Acos : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Acos(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Acos(f));
 }
 
 public class Atan : SingleOperatorTest
 {
-    public override uint Operate(float f) => FloatTools.FloatToBits(Mathf.Atan(f));
+    public override uint Operate(float f) => FloatTools.FloatToBits(RapierMath.Atan(f));
 }
 
 

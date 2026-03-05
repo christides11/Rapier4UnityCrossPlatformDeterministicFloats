@@ -8,29 +8,26 @@ using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    [SerializeField]
-    string inputsFilename = "inputs.txt", resultsFilename = "results.txt";
+    [SerializeField] string inputsFilename = "inputs.txt", resultsFilename = "results.txt";
 
-    [SerializeField]
-    long errorLimit = 100;
+    [SerializeField] long errorLimit = 100;
 
-    [SerializeField]
-    Button generateMenuButton, executeMenuButton, inspectorButton, generateButton, executeButton, manualTesterButton;
+    [SerializeField] Button generateMenuButton,
+        executeMenuButton,
+        inspectorButton,
+        generateButton,
+        executeButton,
+        manualTesterButton;
 
-    [SerializeField]
-    InputField seedInput, countInput;
+    [SerializeField] InputField seedInput, countInput;
 
-    [SerializeField]
-    Toggle treatAllNaNAlikeToggle;
+    [SerializeField] Toggle treatAllNaNAlikeToggle;
 
-    [SerializeField]
-    Text output;
+    [SerializeField] Text output;
 
-    [SerializeField]
-    GameObject menuUI, testUI, generateUI, executeUI;
+    [SerializeField] GameObject menuUI, testUI, generateUI, executeUI;
 
-    [SerializeField]
-    Toggle testTogglePrototype;
+    [SerializeField] Toggle testTogglePrototype;
 
     private void Awake()
     {
@@ -52,10 +49,7 @@ public class Menu : MonoBehaviour
             executeUI.SetActive(true);
         });
 
-        executeButton.onClick.AddListener(() =>
-        {
-            StartCoroutine(RunTest(false));
-        });
+        executeButton.onClick.AddListener(() => { StartCoroutine(RunTest(false)); });
 
         inspectorButton.onClick.AddListener(() => SceneManager.LoadScene("Inspector"));
         manualTesterButton.onClick.AddListener(() => SceneManager.LoadScene("ManualTester"));
@@ -87,6 +81,19 @@ public class Menu : MonoBehaviour
         return path;
     }
 
+    private byte[] LoadFile(string filename)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, filename);
+
+        if (File.Exists(path))
+        {
+            var data = File.ReadAllBytes(path);
+            return data;
+        }
+
+        return null;
+    }
+
     private void GenerateInputsFile()
     {
         string path = Path.Combine(Application.streamingAssetsPath, inputsFilename);
@@ -101,6 +108,7 @@ public class Menu : MonoBehaviour
         generateUI.SetActive(false);
         executeUI.SetActive(false);
 
+#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
         UnityWebRequest inputsReq = UnityWebRequest.Get(GetStreamingAssetsPath(inputsFilename));
         yield return inputsReq.SendWebRequest();
 
@@ -109,8 +117,13 @@ public class Menu : MonoBehaviour
             output.text = $"Unable to retrieve {inputsFilename}.";
             yield break;
         }
+        var data = inputsReq.downloadHandler.data;
+#else
+        var data = LoadFile(inputsFilename);
+        yield return null;
+#endif
 
-        var inputsReader = new StreamReader(new MemoryStream(inputsReq.downloadHandler.data));
+        var inputsReader = new StreamReader(new MemoryStream(data));
         FloatInputs inputs = new FloatInputs(inputsReader);
         inputsReader.Close();
 
@@ -127,6 +140,7 @@ public class Menu : MonoBehaviour
         }
         else
         {
+#if UNITY_ANDROID || UNITY_IOS || UNITY_WEBGL
             UnityWebRequest resultsReq = UnityWebRequest.Get(GetStreamingAssetsPath(resultsFilename));
             yield return resultsReq.SendWebRequest();
 
@@ -135,8 +149,12 @@ public class Menu : MonoBehaviour
                 output.text = $"Unable to retrieve {resultsFilename}.";
                 yield break;
             }
-
-            var resultsReader = new StreamReader(new MemoryStream(resultsReq.downloadHandler.data));
+            var dataOutput = resultsReq.downloadHandler.data;
+#else
+            var dataOutput = LoadFile(resultsFilename);
+            yield return null;
+#endif
+            var resultsReader = new StreamReader(new MemoryStream(dataOutput));
 
             Toggle[] toggles = testTogglePrototype.transform.parent.GetComponentsInChildren<Toggle>(false);
 
@@ -149,7 +167,8 @@ public class Menu : MonoBehaviour
                     selectedTests.Add(tests[i].Name());
             }
 
-            TestRunner runner = new TestRunner(inputs, resultsReader, selectedTests.ToArray(), treatAllNaNAlikeToggle.isOn);
+            TestRunner runner = new TestRunner(inputs, resultsReader, selectedTests.ToArray(),
+                treatAllNaNAlikeToggle.isOn);
             string log = runner.Execute(errorLimit);
 
             output.text = $"Executed {runner.TestCount} tests with {runner.ErrorCount} errors.\n";
