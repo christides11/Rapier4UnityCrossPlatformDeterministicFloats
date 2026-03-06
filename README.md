@@ -28,13 +28,15 @@ Inconclusive.
 * [ARMv7 apparently handles denormal numbers differently from ARMv8](https://stackoverflow.com/a/53993942), so should not be a surprise if it desyncs there. 
 
 ### Data
-
+Test ran on 6000.3.8f1.
 | Platform           | Device                                       | Errors                  |
 |--------------------|----------------------------------------------|-------------------------|
 | Windows Standalone | AMD Ryzen 9 9950X3D                          | Ground Truth            |
 | Windows Standalone | Intel Core i7-7700HQ                         | 0 errors                |
-| Steam Deck (Linux) | AMD RDNA 2                                   | 0 errors                |
+| Linux Standalone   | Steam Deck (AMD RDNA 2)                      | 0 errors                |
 | Android            | Galaxy S25 (ARMv8)                           | 5 in MultiOperatorBurst |
+| WebGL              | Chrome, Windows, AMD Ryzen 9 9950X3D         | 0 errors                |
+| WebGL              | Firefox, Android, Galaxy S25                 | 0 errors                |
 
 ## Running the tests
 
